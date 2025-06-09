@@ -3,9 +3,9 @@ import NavigationBar from "../components/common/NavigationBar";
 
 const MainLayout = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="w-full min-h-screen bg-white">
       <NavigationBar />
-      <main className="pt-[80px]">
+      <main className="w-full h-full pt-[80px]">
         <Outlet />
       </main>
     </div>

@@ -8,7 +8,8 @@ type TypographyVariant =
   | "body2"
   | "body2-bold"
   | "caption"
-  | "small";
+  | "small"
+  | "search-result";
 
 interface TypographyProps {
   variant: TypographyVariant;
@@ -25,6 +26,7 @@ const variantStyles: Record<TypographyVariant, string> = {
   "body2-bold": "text-[14px] leading-[14px] font-bold",
   caption: "text-[16px] leading-[16px] font-medium",
   small: "text-[10px] leading-[10px] font-medium",
+  "search-result": "text-[16px] leading-[24px] font-medium",
 };
 
 const Typography = ({ variant, children, className = "" }: TypographyProps) => {
