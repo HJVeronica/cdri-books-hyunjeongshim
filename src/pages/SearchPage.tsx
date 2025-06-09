@@ -23,10 +23,10 @@ const SearchPage = () => {
             />
           </div>
           <button
-            className="ml-3 h-[35.27px] px-[10px] border border-t-subtitle rounded-[8px] bg-white text-t-subtitle"
+            className="ml-3 h-[35.27px] px-[10px] border border-t-subtitle rounded-[8px] bg-white text-t-subtitle text-body2"
             type="button"
           >
-            <Typography variant="body2">상세검색</Typography>
+            상세검색
           </button>
         </div>
 
