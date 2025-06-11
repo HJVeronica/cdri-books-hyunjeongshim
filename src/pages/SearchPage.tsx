@@ -41,6 +41,9 @@ const SearchPage = () => {
   const [searchValue, setSearchValue] = useState("");
   const [showSearchHistory, setShowSearchHistory] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [expandedBookIndex, setExpandedBookIndex] = useState<number | null>(
+    null
+  );
   const [searchHistory, setSearchHistory] = useState([
     "노르웨이 숲",
     "무라카미 하루키",
@@ -67,6 +70,10 @@ const SearchPage = () => {
   const handleSelectSearchHistory = (item: string) => {
     setSearchValue(item);
     setShowSearchHistory(false);
+  };
+
+  const handleToggleExpand = (index: number) => {
+    setExpandedBookIndex(expandedBookIndex === index ? null : index);
   };
 
   return (
@@ -159,12 +166,17 @@ const SearchPage = () => {
           <div className="w-full">
             {mockBooks.map((book, index) => (
               <div key={index}>
-                <BookListItem {...book} />
-                {/* 확인용 BookListItemDetail */}
-                <BookListItemDetail
-                  {...book}
-                  onToggleExpand={() => console.log("Toggle expand")}
-                />
+                {expandedBookIndex === index ? (
+                  <BookListItemDetail
+                    {...book}
+                    onToggleExpand={() => handleToggleExpand(index)}
+                  />
+                ) : (
+                  <BookListItem
+                    {...book}
+                    onToggleExpand={() => handleToggleExpand(index)}
+                  />
+                )}
               </div>
             ))}
           </div>

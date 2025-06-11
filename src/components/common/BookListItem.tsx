@@ -7,6 +7,7 @@ interface BookListItemProps {
   thumbnail: string;
   price: number;
   url: string;
+  onToggleExpand: () => void;
 }
 
 const BookListItem = ({
@@ -15,6 +16,7 @@ const BookListItem = ({
   thumbnail,
   price,
   url,
+  onToggleExpand,
 }: BookListItemProps) => {
   const handlePurchase = () => {
     window.open(url, "_blank");
@@ -53,7 +55,10 @@ const BookListItem = ({
       </button>
 
       {/* 상세보기 버튼 */}
-      <button className="pl-5 pr-4 py-4 bg-light-gray rounded-lg text-caption text-t-secondary flex items-center gap-[5px]">
+      <button
+        onClick={onToggleExpand}
+        className="pl-5 pr-4 py-4 bg-light-gray rounded-lg text-caption text-t-secondary flex items-center gap-[5px]"
+      >
         상세보기
         <ArrowDownIcon className="w-[14px] h-2 text-t-secondary mt-0.5" />
       </button>
