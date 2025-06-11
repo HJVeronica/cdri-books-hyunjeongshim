@@ -1,11 +1,70 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Noto Sans KR";
+  src: url("./assets/fonts/NotoSansKR-Regular.woff") format("woff"),
+    url("./assets/fonts/NotoSansKR-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans KR";
+  src: url("./assets/fonts/NotoSansKR-Medium.woff") format("woff"),
+    url("./assets/fonts/NotoSansKR-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans KR";
+  src: url("./assets/fonts/NotoSansKR-Bold.woff") format("woff"),
+    url("./assets/fonts/NotoSansKR-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --color-primary: #4880ee;
+  --color-red: #e84118;
+  --color-gray: #dadada;
+  --color-light-gray: #f2f4f6;
+  --color-white: #ffffff;
+  --color-black: #222222;
+  --color-t-primary: #353c49;
+  --color-t-secondary: #6d7582;
+  --color-t-subtitle: #8d94a0;
+  --color-hr-gray: #d2d6da;
+
+  --shadow-modal: 0px 4px 14px 6px rgba(151, 151, 151, 0.15);
+  --shadow-select: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+/* prettier-ignore */
+@layer components {
+  .text-title1 { @apply text-[24px] leading-[24px] font-bold; }
+  .text-title2 { @apply text-[22px] leading-[24px] font-bold; }
+  .text-title3 { @apply text-[18px] leading-[18px] font-bold; }
+  .text-h3-bold { @apply text-[18px] leading-[26px] font-bold; }
+  .text-body1 { @apply text-[20px] leading-[20px] font-medium; }
+  .text-body2 { @apply text-[14px] leading-[14px] font-medium; }
+  .text-body2-bold { @apply text-[14px] leading-[14px] font-bold; }
+  .text-caption { @apply text-[16px] leading-[16px] font-medium; }
+  .text-small { @apply text-[10px] leading-[10px] font-medium; }
+  .text-search-result { @apply text-[16px] leading-[24px] font-medium; }
+  .text-book-detail-btn { @apply text-[16px] leading-[24px] font-medium; }
+}
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Noto Sans KR", system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--color-text-primary);
+  background-color: var(--color-white);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -13,56 +72,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  padding: 0;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+button,
+a {
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
 }
