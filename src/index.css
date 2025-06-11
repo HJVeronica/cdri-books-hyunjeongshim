@@ -37,6 +37,7 @@
   --color-t-primary: #353c49;
   --color-t-secondary: #6d7582;
   --color-t-subtitle: #8d94a0;
+  --color-hr-gray: #d2d6da;
 }
 
 /* prettier-ignore */
@@ -44,12 +45,14 @@
   .text-title1 { @apply text-[24px] leading-[24px] font-bold; }
   .text-title2 { @apply text-[22px] leading-[24px] font-bold; }
   .text-title3 { @apply text-[18px] leading-[18px] font-bold; }
+  .text-h3-bold { @apply text-[18px] leading-[26px] font-bold; }
   .text-body1 { @apply text-[20px] leading-[20px] font-medium; }
   .text-body2 { @apply text-[14px] leading-[14px] font-medium; }
   .text-body2-bold { @apply text-[14px] leading-[14px] font-bold; }
   .text-caption { @apply text-[16px] leading-[16px] font-medium; }
   .text-small { @apply text-[10px] leading-[10px] font-medium; }
   .text-search-result { @apply text-[16px] leading-[24px] font-medium; }
+  .text-book-detail-btn { @apply text-[16px] leading-[24px] font-medium; }
 }
 
 :root {
