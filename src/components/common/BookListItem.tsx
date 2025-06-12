@@ -4,10 +4,12 @@ import ArrowDownIcon from "../../assets/icons/ic-arrow-down.svg?react";
 interface BookListItemProps {
   title: string;
   author: string;
+  publisher: string;
   thumbnail: string;
   price: number;
   url: string;
   onToggleExpand: () => void;
+  status: string;
 }
 
 const BookListItem = ({
@@ -17,13 +19,20 @@ const BookListItem = ({
   price,
   url,
   onToggleExpand,
+  status,
 }: BookListItemProps) => {
   const handlePurchase = () => {
     window.open(url, "_blank");
   };
 
+  const isDisabled = status !== "정상판매";
+
   return (
-    <div className="flex items-center py-4 border-b-1 border-hr-gray pl-12 pr-4">
+    <div
+      className={`flex items-center py-4 border-b-1 border-hr-gray pl-12 pr-4 ${
+        isDisabled ? "bg-gray-200 opacity-60 pointer-events-none" : ""
+      }`}
+    >
       {/* 책 이미지 */}
       <img
         src={thumbnail}
@@ -50,6 +59,7 @@ const BookListItem = ({
       <button
         onClick={handlePurchase}
         className="px-7 py-4 bg-primary text-white text-caption rounded-lg mr-2"
+        disabled={isDisabled}
       >
         구매하기
       </button>
@@ -58,6 +68,7 @@ const BookListItem = ({
       <button
         onClick={onToggleExpand}
         className="pl-5 pr-4 py-4 bg-light-gray rounded-lg text-caption text-t-secondary flex items-center gap-[5px]"
+        disabled={isDisabled}
       >
         상세보기
         <ArrowDownIcon className="w-[14px] h-2 text-t-secondary mt-0.5" />

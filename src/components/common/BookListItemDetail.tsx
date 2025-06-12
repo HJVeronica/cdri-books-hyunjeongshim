@@ -1,16 +1,19 @@
 import Typography from "./Typography";
 import ArrowDownIcon from "../../assets/icons/ic-arrow-down.svg?react";
 import FavoriteIconEmpty from "../../assets/icons/ic-favorite-empty.svg?react";
+import { formatContents } from "../../utils/format";
 
 interface BookListItemDetailProps {
   title: string;
   author: string;
+  publisher: string;
   thumbnail: string;
   price: number;
   salePrice?: number;
   url: string;
   contents: string;
   onToggleExpand: () => void;
+  status: string;
 }
 
 const BookListItemDetail = ({
@@ -22,13 +25,20 @@ const BookListItemDetail = ({
   url,
   contents,
   onToggleExpand,
+  status,
 }: BookListItemDetailProps) => {
   const handlePurchase = () => {
     window.open(url, "_blank");
   };
 
+  const isDisabled = status !== "정상판매";
+
   return (
-    <div className="pt-6 pb-10 pl-13 pr-4 border-b-1 border-hr-gray">
+    <div
+      className={`pt-6 pb-10 pl-13 pr-4 border-b-1 border-hr-gray ${
+        isDisabled ? "bg-gray-100 opacity-60 pointer-events-none" : ""
+      }`}
+    >
       {/* 상세 정보 영역 */}
       <div className="flex gap-8">
         {/* 1열 영역 */}
@@ -38,15 +48,22 @@ const BookListItemDetail = ({
             alt={title}
             className="w-[210px] h-[280px] object-cover rounded"
           />
-          <button className="absolute top-2 right-2 w-6 h-6 bg-transparent border-0 rounded-full flex items-center justify-center">
+          <button
+            className="absolute top-2 right-2 w-6 h-6 bg-transparent border-0 rounded-full flex items-center justify-center"
+            disabled={isDisabled}
+          >
             <FavoriteIconEmpty className="w-6 h-6" />
           </button>
         </div>
 
         {/* 2열 영역 */}
-        <div className="flex flex-col justify-end">
+        <div
+          className={`flex flex-col ${
+            contents ? "justify-end" : "justify-start"
+          }`}
+        >
           {/* 제목과 저자 */}
-          <div className="flex items-center gap-4 mb-4">
+          <div className="flex items-center gap-4 mb-4 break-keep">
             <Typography variant="h3-bold" className="text-t-primary">
               {title}
             </Typography>
@@ -56,25 +73,26 @@ const BookListItemDetail = ({
             </Typography>
           </div>
 
-          {/* 책 소개 */}
-          <div className="">
-            <Typography
-              variant="book-detail-title"
-              className="text-t-primary mb-3"
-              as="div"
-            >
-              책 소개
-            </Typography>
+          {/* 책 소개 - contents가 있을 때만 표시 */}
+          {contents && (
+            <div className="">
+              <Typography
+                variant="book-detail-title"
+                className="text-t-primary mb-3"
+                as="div"
+              >
+                책 소개
+              </Typography>
 
-            {/* 책 설명 */}
-            <Typography
-              variant="book-detail-contents"
-              className="text-t-primary"
-              as="div"
-            >
-              {contents}
-            </Typography>
-          </div>
+              {/* 책 설명 */}
+              <Typography
+                variant="body2"
+                className="text-t-secondary whitespace-pre-line"
+              >
+                {formatContents(contents)}
+              </Typography>
+            </div>
+          )}
         </div>
 
         {/* 3열 영역 */}
@@ -82,6 +100,7 @@ const BookListItemDetail = ({
           <button
             onClick={onToggleExpand}
             className="pl-5 pr-4 py-4 bg-light-gray rounded-lg text-caption text-t-secondary flex items-center gap-[5px]"
+            disabled={isDisabled}
           >
             상세보기
             <ArrowDownIcon className="w-[14px] h-2 text-t-secondary mt-0.5 rotate-180" />
@@ -90,39 +109,47 @@ const BookListItemDetail = ({
           <div className="flex flex-col items-end gap-2 w-full">
             {/* 가격 정보 */}
             <div className="flex flex-col items-end gap-2 mb-7">
+              {/* 원가 표시 - 항상 표시 */}
+              <div className="flex items-center gap-2">
+                <Typography
+                  variant="book-detail-price-title"
+                  className="text-t-subtitle"
+                >
+                  원가
+                </Typography>
+                <Typography
+                  variant={
+                    salePrice && salePrice !== price
+                      ? "book-detail-strike-price"
+                      : "book-detail-price-title"
+                  }
+                  className="text-t-primary"
+                >
+                  {price.toLocaleString()}원
+                </Typography>
+              </div>
+
+              {/* 할인가 표시 - salePrice 값이 존재하고 원가와 다른 경우에만 */}
               {salePrice && salePrice !== price && (
                 <div className="flex items-center gap-2">
                   <Typography
                     variant="book-detail-price-title"
                     className="text-t-subtitle"
                   >
-                    원가
+                    할인가
                   </Typography>
-                  <Typography
-                    variant="book-detail-strike-price"
-                    className="text-t-primary"
-                  >
-                    {price.toLocaleString()}원
+                  <Typography variant="h3-bold" className="text-t-primary">
+                    {salePrice.toLocaleString()}원
                   </Typography>
                 </div>
               )}
-              <div className="flex items-center gap-2">
-                <Typography
-                  variant="book-detail-price-title"
-                  className="text-t-subtitle"
-                >
-                  할인가
-                </Typography>
-                <Typography variant="h3-bold" className="text-t-primary">
-                  {(salePrice || price).toLocaleString()}원
-                </Typography>
-              </div>
             </div>
 
             {/* 구매하기 버튼 */}
             <button
               onClick={handlePurchase}
               className="w-[240px] py-4 bg-primary text-white text-book-detail-btn rounded-lg"
+              disabled={isDisabled}
             >
               구매하기
             </button>
