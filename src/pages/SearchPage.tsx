@@ -10,6 +10,7 @@ import CloseIcon from "../assets/icons/ic-close.svg?react";
 import { useSearchBooksInfinite } from "../hooks/useSearchBooks";
 import { useSearchStore } from "../store/searchStore";
 import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
+import { useSearchHistory } from "../hooks/useSearchHistory";
 import { getSearchTarget } from "../utils/searchUtils";
 
 const SearchPage = () => {
@@ -33,14 +34,14 @@ const SearchPage = () => {
   const [expandedBookIndex, setExpandedBookIndex] = useState<number | null>(
     null
   );
-  const [searchHistory, setSearchHistory] = useState([
-    "노르웨이 숲",
-    "무라카미 하루키",
-  ]);
+
+  // 검색 기록 hook 사용
+  const { searchHistory, addToHistory, removeFromHistory } = useSearchHistory();
 
   // 검색 기록 삭제
   const handleRemoveSearchHistory = (index: number) => {
-    setSearchHistory((prev) => prev.filter((_, i) => i !== index));
+    const keyword = searchHistory[index];
+    removeFromHistory(keyword);
   };
 
   // 검색 input 포커스/블러
@@ -59,6 +60,9 @@ const SearchPage = () => {
 
     // 검색 타입에 따른 target 값 설정
     setSearchTarget(getSearchTarget(searchType));
+
+    // 상세검색도 검색 기록에 추가
+    addToHistory(keyword);
   };
 
   // 검색 기록 클릭
@@ -67,6 +71,9 @@ const SearchPage = () => {
     setSearchValue(item);
     setSearchKeyword(item);
     setShowSearchHistory(false);
+
+    // 검색 기록 최신으로 업데이트 (기존 항목이면 맨 앞으로 이동)
+    addToHistory(item);
   };
 
   // 엔터로 검색 트리거
@@ -75,8 +82,12 @@ const SearchPage = () => {
       // 전체검색 시 상세검색 초기화
       resetDetailSearch();
 
-      setSearchKeyword(searchValue.trim());
+      const keyword = searchValue.trim();
+      setSearchKeyword(keyword);
       setShowSearchHistory(false);
+
+      // 검색 기록에 추가
+      addToHistory(keyword);
     }
   };
 
@@ -166,7 +177,10 @@ const SearchPage = () => {
                       </Typography>
                     </button>
                     <button
-                      onClick={() => handleRemoveSearchHistory(index)}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        handleRemoveSearchHistory(index);
+                      }}
                       className="p-1 rounded-full"
                     >
                       <CloseIcon className="w-6 h-6 text-t-secondary" />
