@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ModalCloseIcon from "../../assets/icons/ic-modal-close.svg?react";
 import ArrowDownIcon from "../../assets/icons/ic-arrow-down.svg?react";
+import { useSearchStore } from "../../store/searchStore";
 
 interface SearchDetailModalProps {
   isOpen: boolean;
@@ -13,14 +14,25 @@ const SearchDetailModal = ({
   onClose,
   onSearch,
 }: SearchDetailModalProps) => {
-  const [searchType, setSearchType] = useState("제목");
-  const [keyword, setKeyword] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const {
+    detailSearchType,
+    setDetailSearchType,
+    detailSearchValue,
+    setDetailSearchValue,
+  } = useSearchStore();
 
-  const searchOptions = ["제목", "저자명", "출판사"];
+  const searchOptions = [
+    { label: "제목", value: "title" },
+    { label: "저자명", value: "person" },
+    { label: "출판사", value: "publisher" },
+  ];
 
   const handleSearch = () => {
-    onSearch(searchType, keyword);
+    const selectedOption = searchOptions.find(
+      (option) => option.label === detailSearchType
+    );
+    onSearch(selectedOption?.value || "title", detailSearchValue);
     onClose();
   };
 
@@ -33,8 +45,8 @@ const SearchDetailModal = ({
     }
   };
 
-  const handleSelectOption = (option: string) => {
-    setSearchType(option);
+  const handleSelectOption = (option: { label: string; value: string }) => {
+    setDetailSearchType(option.label);
     setIsDropdownOpen(false);
   };
 
@@ -46,7 +58,6 @@ const SearchDetailModal = ({
         isOpen ? "opacity-100 scale-100" : "opacity-0 scale-95"
       }`}
     >
-      {/* X 버튼 */}
       <button
         onClick={onClose}
         className="absolute top-3 right-3 p-1 cursor-pointer"
@@ -55,7 +66,6 @@ const SearchDetailModal = ({
       </button>
 
       <div className="py-9 px-6 h-full flex flex-col">
-        {/* 제목 드롭다운과 검색어 입력 */}
         <div className="flex gap-2 mb-4">
           {/* 커스텀 드롭다운 */}
           <div className="relative w-25">
@@ -63,33 +73,33 @@ const SearchDetailModal = ({
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="w-full h-10 px-2 border-b border-hr-gray bg-white text-t-primary text-[14px] font-bold text-left outline-none focus:border-primary flex items-center justify-between"
             >
-              {searchType}
+              {detailSearchType}
               <ArrowDownIcon className="w-3[10.5px] h-[6px]" />
             </button>
 
             {isDropdownOpen && (
               <div className="absolute top-full left-0 right-0 bg-white border border-hr-gray shadow-select z-30 mt-[6px]">
                 {searchOptions
-                  .filter((option) => option !== searchType)
+                  .filter((option) => option.label !== detailSearchType)
                   .map((option) => (
                     <button
-                      key={option}
+                      key={option.value}
                       onClick={() => handleSelectOption(option)}
                       className="w-full px-2 py-1 text-left text-[14px] leading-[22px] font-medium text-t-subtitle"
                     >
-                      {option}
+                      {option.label}
                     </button>
                   ))}
               </div>
             )}
           </div>
 
-          {/* 검색어 입력 */}
+          {/* 검색창 */}
           <input
             type="text"
             placeholder="검색어 입력"
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
+            value={detailSearchValue}
+            onChange={(e) => setDetailSearchValue(e.target.value)}
             onKeyDown={handleKeyDown}
             className="flex-1 h-10 px-3 border-b border-hr-gray bg-white text-t-primary text-[14px] leading-[22px] placeholder:text-t-subtitle outline-none focus:border-primary"
           />

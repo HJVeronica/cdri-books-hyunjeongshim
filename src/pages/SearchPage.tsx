@@ -7,74 +7,149 @@ import BookListItemDetail from "../components/common/BookListItemDetail";
 import SearchDetailModal from "../components/search/SearchDetailModal";
 import SearchIcon from "../assets/icons/ic-search.svg?react";
 import CloseIcon from "../assets/icons/ic-close.svg?react";
-
-// 더미 데이터
-const mockBooks = [
-  {
-    title: "고양이를 버리다",
-    author: "무라카미 하루키",
-    thumbnail:
-      "https://image.aladin.co.kr/product/25427/78/cover500/e932537340_1.jpg",
-    price: 13300,
-    salePrice: 11970,
-    url: "https://search.daum.net/search?w=bookpage&bookId=387102",
-    contents: `“나를 언제까지나 잊지 마, 내가 여기 있었다는 걸 기억해 줘.”
-
-하루키 월드의 빛나는 다이아몬드
-무라카미 하루키를 만나기 위해 가장 먼저 읽어야 할 책!
-
-페이지를 처음 펼치는 오늘의 젊음들에게, 그리고 오랜 기억 속에 책의 한 구절 을 간직하고 있는 어제의 젊음들에게, 한결같은 울림으로 예민하고 섬세한 청춘의 감성을 전하며 영원한 필독서로 사랑받고 있는 무라카미 하루키의 대표작 『노르웨이의 숲』. 1989년 『상실의 시대』라는 제명으로 처음 출간된 이래 우리 출판 사상 최장기 베스트셀러를 기록하며 하나의 사건으로 남은 소설, 『노르웨이의 숲』이 민음사 세계문학전집에 이어 단행본으로 출간되었다.`,
-  },
-  {
-    title: "무라카미 T(양장본 HardCover)",
-    author: "무라카미 하루키",
-    thumbnail:
-      "https://image.aladin.co.kr/product/27030/46/cover500/893498998x_1.jpg",
-    price: 13300,
-    url: "https://search.daum.net/search?w=bookpage&bookId=387102",
-    contents: "책소개 내용",
-  },
-];
+import { useSearchBooksInfinite } from "../hooks/useSearchBooks";
+import { useSearchStore } from "../store/searchStore";
+import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
+import { useSearchHistory } from "../hooks/useSearchHistory";
+import { useFavorites } from "../hooks/useFavorites";
+import { getSearchTarget } from "../utils/searchUtils";
+import type { FavoriteBook } from "../types/storage";
+import type { Book } from "../types/book";
 
 const SearchPage = () => {
-  const hasResults = mockBooks.length > 0;
-  const [searchValue, setSearchValue] = useState("");
+  // Zustand store에서 상태와 액션 가져오기
+  const {
+    searchValue,
+    searchKeyword,
+    detailSearchKeyword,
+    searchTarget,
+    setSearchValue,
+    setSearchKeyword,
+    setDetailSearchValue,
+    setDetailSearchKeyword,
+    setSearchTarget,
+    resetSearch,
+    resetDetailSearch,
+  } = useSearchStore();
+
   const [showSearchHistory, setShowSearchHistory] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [expandedBookIndex, setExpandedBookIndex] = useState<number | null>(
     null
   );
-  const [searchHistory, setSearchHistory] = useState([
-    "노르웨이 숲",
-    "무라카미 하루키",
-  ]);
 
+  // 검색 기록 hook 사용
+  const { searchHistory, addToHistory, removeFromHistory } = useSearchHistory();
+
+  // 찜 목록 hook 사용
+  const { toggleFavorite } = useFavorites();
+
+  // 검색 기록 삭제
   const handleRemoveSearchHistory = (index: number) => {
-    setSearchHistory((prev) => prev.filter((_, i) => i !== index));
+    const keyword = searchHistory[index];
+    removeFromHistory(keyword);
   };
 
-  const handleInputFocus = () => {
-    setShowSearchHistory(true);
-  };
-
-  const handleInputBlur = () => {
-    // 약간의 지연을 두어 클릭 이벤트가 처리될 수 있도록 함
+  // 검색 input 포커스/블러
+  const handleInputFocus = () => setShowSearchHistory(true);
+  const handleInputBlur = () =>
     setTimeout(() => setShowSearchHistory(false), 150);
-  };
 
+  // 상세검색 모달
   const handleDetailSearch = (searchType: string, keyword: string) => {
-    console.log("상세검색:", searchType, keyword);
-    // 여기에 실제 검색 로직 구현
-  };
+    // 상세검색 시 전체검색 초기화
+    resetSearch();
 
-  const handleSelectSearchHistory = (item: string) => {
-    setSearchValue(item);
+    setDetailSearchValue(keyword);
+    setDetailSearchKeyword(keyword);
     setShowSearchHistory(false);
+
+    // 검색 타입에 따른 target 값 설정
+    setSearchTarget(getSearchTarget(searchType));
+
+    // 상세검색도 검색 기록에 추가
+    addToHistory(keyword);
   };
 
+  // 검색 기록 클릭
+  const handleSelectSearchHistory = (item: string) => {
+    resetDetailSearch();
+    setSearchValue(item);
+    setSearchKeyword(item);
+    setShowSearchHistory(false);
+
+    // 검색 기록 최신으로 업데이트 (기존 항목이면 맨 앞으로 이동)
+    addToHistory(item);
+  };
+
+  // 엔터로 검색 트리거
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && searchValue.trim()) {
+      // 전체검색 시 상세검색 초기화
+      resetDetailSearch();
+
+      const keyword = searchValue.trim();
+      setSearchKeyword(keyword);
+      setShowSearchHistory(false);
+
+      // 검색 기록에 추가
+      addToHistory(keyword);
+    }
+  };
+
+  // 상세보기 토글
   const handleToggleExpand = (index: number) => {
     setExpandedBookIndex(expandedBookIndex === index ? null : index);
   };
+
+  // 찜하기 핸들러 - ISBN으로만 토글
+  const handleFavoriteClick = (book: Book) => {
+    const favoriteBook: FavoriteBook = {
+      isbn: book.isbn,
+      title: book.title,
+      authors: book.authors,
+      thumbnail: book.thumbnail,
+      publisher: book.publisher,
+      price: book.price,
+      sale_price: book.salePrice || book.price,
+      url: book.url,
+      contents: book.contents,
+    };
+
+    toggleFavorite(favoriteBook);
+  };
+
+  // 무한 스크롤 도서 검색
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isFetching,
+    isPending,
+    isError,
+  } = useSearchBooksInfinite(
+    {
+      query: searchKeyword || detailSearchKeyword,
+      size: 10,
+      target: searchTarget,
+    },
+    !!(searchKeyword || detailSearchKeyword)
+  );
+
+  // 무한스크롤 hook 사용
+  const { ref } = useInfiniteScroll({
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isFetching,
+  });
+
+  // 모든 페이지의 도서 합치기
+  const pageSize = 10;
+  const fetchedPageCount = data?.pages.length ?? 0;
+  const books = data?.pages.flatMap((page) => page.books) || [];
+  const visibleBooks = books.slice(0, fetchedPageCount * pageSize);
 
   return (
     <div className="flex flex-col w-full bg-white max-w-[960px] mx-auto">
@@ -103,6 +178,7 @@ const SearchPage = () => {
                 onChange={(e) => setSearchValue(e.target.value)}
                 onFocus={handleInputFocus}
                 onBlur={handleInputBlur}
+                onKeyDown={handleInputKeyDown}
                 className="flex-1 bg-transparent outline-none text-t-primary placeholder:text-t-caption text-[16px] leading-[16px]"
               />
             </div>
@@ -124,7 +200,10 @@ const SearchPage = () => {
                       </Typography>
                     </button>
                     <button
-                      onClick={() => handleRemoveSearchHistory(index)}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        handleRemoveSearchHistory(index);
+                      }}
                       className="p-1 rounded-full"
                     >
                       <CloseIcon className="w-6 h-6 text-t-secondary" />
@@ -153,36 +232,68 @@ const SearchPage = () => {
         </div>
 
         {/* 도서 검색 결과/총 건수 - SearchCountText */}
-        <div className="flex items-center gap-[16px] mb-10">
-          <Typography variant="search-result" className="text-t-primary">
-            도서 검색 결과
-          </Typography>
-
-          <ResultCount count={mockBooks.length} />
-        </div>
+        {(searchKeyword || detailSearchKeyword) && (
+          <div className="flex items-center gap-[16px] mb-10">
+            <Typography variant="search-result" className="text-t-primary">
+              도서 검색 결과
+            </Typography>
+            <ResultCount count={data?.pages[0]?.meta?.total_count ?? 0} />
+          </div>
+        )}
 
         {/* 검색 결과 목록 또는 빈 결과 */}
-        {hasResults ? (
-          <div className="w-full">
-            {mockBooks.map((book, index) => (
-              <div key={index}>
-                {expandedBookIndex === index ? (
-                  <BookListItemDetail
-                    {...book}
-                    onToggleExpand={() => handleToggleExpand(index)}
-                  />
-                ) : (
-                  <BookListItem
-                    {...book}
-                    onToggleExpand={() => handleToggleExpand(index)}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        ) : (
+        {!searchKeyword && !detailSearchKeyword ? (
           <div className="flex items-center justify-center w-full h-full mt-[60px]">
             <EmptyResult />
+          </div>
+        ) : isPending ? (
+          <div className="flex items-center justify-center w-full h-full mt-[60px]">
+            <Typography variant="body2" className="text-t-secondary">
+              로딩 중...
+            </Typography>
+          </div>
+        ) : isError ? (
+          <div className="flex items-center justify-center w-full h-full mt-[60px]">
+            <EmptyResult message="검색 중 오류가 발생했습니다." />
+          </div>
+        ) : visibleBooks.length === 0 ? (
+          <div className="flex items-center justify-center w-full h-full mt-[60px]">
+            <EmptyResult />
+          </div>
+        ) : (
+          <div className="w-full">
+            {visibleBooks.map((book, index) => {
+              return (
+                <div key={index}>
+                  {expandedBookIndex === index ? (
+                    <BookListItemDetail
+                      {...book}
+                      author={book.authors.join(", ")}
+                      onToggleExpand={() => handleToggleExpand(index)}
+                      onFavoriteClick={() => handleFavoriteClick(book)}
+                      status={book.status}
+                    />
+                  ) : (
+                    <BookListItem
+                      {...book}
+                      author={book.authors.join(", ")}
+                      onToggleExpand={() => handleToggleExpand(index)}
+                      onFavoriteClick={() => handleFavoriteClick(book)}
+                      status={book.status}
+                    />
+                  )}
+                </div>
+              );
+            })}
+            {/* 무한스크롤 - sentinel div */}
+            <div ref={ref} />
+            {isFetchingNextPage && (
+              <div className="flex justify-center py-4">
+                <Typography variant="body2" className="text-t-secondary">
+                  불러오는 중...
+                </Typography>
+              </div>
+            )}
           </div>
         )}
       </div>
