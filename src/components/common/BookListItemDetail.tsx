@@ -1,22 +1,26 @@
 import Typography from "./Typography";
 import ArrowDownIcon from "../../assets/icons/ic-arrow-down.svg?react";
 import FavoriteIconEmpty from "../../assets/icons/ic-favorite-empty.svg?react";
+import FavoriteIconFilled from "../../assets/icons/ic-favorite-filled.svg?react";
 import { formatContents } from "../../utils/format";
+import { useFavorites } from "../../hooks/useFavorites";
 
 interface BookListItemDetailProps {
+  isbn: string;
   title: string;
   author: string;
-  publisher: string;
   thumbnail: string;
   price: number;
   salePrice?: number;
   url: string;
   contents: string;
   onToggleExpand: () => void;
+  onFavoriteClick: () => void;
   status: string;
 }
 
 const BookListItemDetail = ({
+  isbn,
   title,
   author,
   thumbnail,
@@ -25,8 +29,12 @@ const BookListItemDetail = ({
   url,
   contents,
   onToggleExpand,
+  onFavoriteClick,
   status,
 }: BookListItemDetailProps) => {
+  const { checkIsFavorite } = useFavorites();
+  const isFaved = checkIsFavorite(isbn);
+
   const handlePurchase = () => {
     window.open(url, "_blank");
   };
@@ -49,10 +57,15 @@ const BookListItemDetail = ({
             className="w-[210px] h-[280px] object-cover rounded"
           />
           <button
+            onClick={onFavoriteClick}
             className="absolute top-2 right-2 w-6 h-6 bg-transparent border-0 rounded-full flex items-center justify-center"
             disabled={isDisabled}
           >
-            <FavoriteIconEmpty className="w-6 h-6" />
+            {isFaved ? (
+              <FavoriteIconFilled className="w-6 h-6" />
+            ) : (
+              <FavoriteIconEmpty className="w-6 h-6" />
+            )}
           </button>
         </div>
 

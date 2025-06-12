@@ -54,6 +54,7 @@ export const searchBooks = async (
  */
 export const transformKakaoBookToBook = (kakaoBook: KakaoBook): Book => {
   return {
+    isbn: kakaoBook.isbn,
     title: kakaoBook.title,
     authors: kakaoBook.authors,
     publisher: kakaoBook.publisher,

@@ -11,7 +11,10 @@ import { useSearchBooksInfinite } from "../hooks/useSearchBooks";
 import { useSearchStore } from "../store/searchStore";
 import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
 import { useSearchHistory } from "../hooks/useSearchHistory";
+import { useFavorites } from "../hooks/useFavorites";
 import { getSearchTarget } from "../utils/searchUtils";
+import type { FavoriteBook } from "../types/storage";
+import type { Book } from "../types/book";
 
 const SearchPage = () => {
   // Zustand store에서 상태와 액션 가져오기
@@ -37,6 +40,9 @@ const SearchPage = () => {
 
   // 검색 기록 hook 사용
   const { searchHistory, addToHistory, removeFromHistory } = useSearchHistory();
+
+  // 찜 목록 hook 사용
+  const { toggleFavorite } = useFavorites();
 
   // 검색 기록 삭제
   const handleRemoveSearchHistory = (index: number) => {
@@ -94,6 +100,23 @@ const SearchPage = () => {
   // 상세보기 토글
   const handleToggleExpand = (index: number) => {
     setExpandedBookIndex(expandedBookIndex === index ? null : index);
+  };
+
+  // 찜하기 핸들러 - ISBN으로만 토글
+  const handleFavoriteClick = (book: Book) => {
+    const favoriteBook: FavoriteBook = {
+      isbn: book.isbn,
+      title: book.title,
+      authors: book.authors,
+      thumbnail: book.thumbnail,
+      publisher: book.publisher,
+      price: book.price,
+      sale_price: book.salePrice || book.price,
+      url: book.url,
+      contents: book.contents,
+    };
+
+    toggleFavorite(favoriteBook);
   };
 
   // 무한 스크롤 도서 검색
@@ -247,6 +270,7 @@ const SearchPage = () => {
                       {...book}
                       author={book.authors.join(", ")}
                       onToggleExpand={() => handleToggleExpand(index)}
+                      onFavoriteClick={() => handleFavoriteClick(book)}
                       status={book.status}
                     />
                   ) : (
@@ -254,6 +278,7 @@ const SearchPage = () => {
                       {...book}
                       author={book.authors.join(", ")}
                       onToggleExpand={() => handleToggleExpand(index)}
+                      onFavoriteClick={() => handleFavoriteClick(book)}
                       status={book.status}
                     />
                   )}

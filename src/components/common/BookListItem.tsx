@@ -1,26 +1,35 @@
 import Typography from "./Typography";
 import ArrowDownIcon from "../../assets/icons/ic-arrow-down.svg?react";
+import FavoriteIconEmpty from "../../assets/icons/ic-favorite-empty.svg?react";
+import FavoriteIconFilled from "../../assets/icons/ic-favorite-filled.svg?react";
+import { useFavorites } from "../../hooks/useFavorites";
 
 interface BookListItemProps {
+  isbn: string;
   title: string;
   author: string;
-  publisher: string;
   thumbnail: string;
   price: number;
   url: string;
   onToggleExpand: () => void;
+  onFavoriteClick: () => void;
   status: string;
 }
 
 const BookListItem = ({
+  isbn,
   title,
   author,
   thumbnail,
   price,
   url,
   onToggleExpand,
+  onFavoriteClick,
   status,
 }: BookListItemProps) => {
+  const { checkIsFavorite } = useFavorites();
+  const isFaved = checkIsFavorite(isbn);
+
   const handlePurchase = () => {
     window.open(url, "_blank");
   };
@@ -34,11 +43,20 @@ const BookListItem = ({
       }`}
     >
       {/* 책 이미지 */}
-      <img
-        src={thumbnail}
-        alt={title}
-        className="w-12 h-17 object-cover rounded flex-shrink-0 mr-10"
-      />
+      <div className="relative flex-shrink-0 mr-10">
+        <img
+          src={thumbnail}
+          alt={title}
+          className="w-12 h-17 object-cover rounded"
+        />
+        <button
+          onClick={onFavoriteClick}
+          className="absolute top-0.5 right-0.5 w-[13.33px] h-[12.33px] bg-transparent border-0 rounded-full flex items-center justify-center"
+          disabled={isDisabled}
+        >
+          {isFaved ? <FavoriteIconFilled /> : <FavoriteIconEmpty />}
+        </button>
+      </div>
 
       {/* 책 정보 */}
       <div className="flex-1">

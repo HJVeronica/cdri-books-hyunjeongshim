@@ -26,6 +26,7 @@ export interface KakaoBook {
 
 // 앱에서 사용할 도서 타입
 export interface Book {
+  isbn: string;
   title: string;
   authors: string[];
   publisher: string;

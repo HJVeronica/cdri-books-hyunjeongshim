@@ -4,12 +4,10 @@ export interface FavoriteBook {
   authors: string[];
   thumbnail: string;
   publisher: string;
-  datetime: string;
   price: number;
   sale_price: number;
   url: string;
   contents: string;
-  translators: string[];
 }
 
 export const STORAGE_KEYS = {

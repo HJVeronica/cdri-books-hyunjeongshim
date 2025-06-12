@@ -3,7 +3,6 @@ import {
   getSearchHistory,
   addSearchHistory,
   removeSearchHistory,
-  clearSearchHistory,
 } from "../utils/storage";
 
 export function useSearchHistory() {
@@ -29,16 +28,9 @@ export function useSearchHistory() {
     setSearchHistory(updatedHistory);
   }, []);
 
-  // 전체 검색 기록 삭제
-  const clearHistory = useCallback(() => {
-    clearSearchHistory();
-    setSearchHistory([]);
-  }, []);
-
   return {
     searchHistory,
     addToHistory,
     removeFromHistory,
-    clearHistory,
   };
 }
