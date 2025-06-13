@@ -7,9 +7,11 @@ const NavigationBar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 h-[80px] bg-white flex items-center px-20">
       {/* 서비스명 */}
-      <Typography variant="title1" className="text-t-primary">
-        CERTICOS BOOKS
-      </Typography>
+      <Link to="/">
+        <Typography variant="title1" className="text-t-primary">
+          CERTICOS BOOKS
+        </Typography>
+      </Link>
 
       {/* 중앙 메뉴 버튼 */}
       <div className="flex-1 flex justify-center gap-10 pr-30">

@@ -1,17 +1,6 @@
-import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
-import { searchBooks, searchBooksInfinite } from "../utils/api";
-import type { BookSearchParams } from "../types/book";
-
-// 도서 검색 hook
-export const useSearchBooks = (params: BookSearchParams, enabled = true) => {
-  return useQuery({
-    queryKey: ["books", "search", params],
-    queryFn: () => searchBooks(params),
-    enabled: enabled && !!params.query,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-  });
-};
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { searchBooksInfinite } from "../utils/api";
+import type { BookSearchParams } from "../types/api/book";
 
 // 무한 스크롤 도서 검색 hook
 export const useSearchBooksInfinite = (

@@ -1,32 +1,7 @@
 import { create } from "zustand";
+import type { SearchStore } from "../types/store";
 
-interface SearchState {
-  // 전체검색 상태
-  searchValue: string;
-  searchKeyword: string;
-
-  // 상세검색 상태
-  detailSearchValue: string;
-  detailSearchKeyword: string;
-  searchTarget: "title" | "publisher" | "person" | undefined;
-  detailSearchType: string;
-
-  // 액션
-  setSearchValue: (value: string) => void;
-  setSearchKeyword: (keyword: string) => void;
-  setDetailSearchValue: (value: string) => void;
-  setDetailSearchKeyword: (keyword: string) => void;
-  setSearchTarget: (
-    target: "title" | "publisher" | "person" | undefined
-  ) => void;
-  setDetailSearchType: (type: string) => void;
-
-  // 검색 초기화
-  resetSearch: () => void;
-  resetDetailSearch: () => void;
-}
-
-export const useSearchStore = create<SearchState>((set) => ({
+export const useSearchStore = create<SearchStore>((set) => ({
   // 전체검색 상태
   searchValue: "",
   searchKeyword: "",
