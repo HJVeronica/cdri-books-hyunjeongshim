@@ -7,6 +7,7 @@
 ### 구현 기능 (요구사항)
 
 1. 도서 검색 페이지
+
    <img src="https://github.com/user-attachments/assets/013d811a-a1d8-4d73-b801-d558ecb15e01" width="700" />
 
    - 도서 전체 검색 및 상세 검색
@@ -17,6 +18,7 @@
    - 검색 결과 내 찜 버튼 클릭 시, 찜 목록 추가/삭제 (`localStorage`)
 
 2. 찜 목록 페이지
+
    <img src="https://github.com/user-attachments/assets/fe36d806-71cb-4841-a59d-ad7d8c6cdbd2" width="700" />
 
    - 찜 목록의 데이터 화면에 표시
