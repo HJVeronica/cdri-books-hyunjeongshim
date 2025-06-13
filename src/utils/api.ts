@@ -1,9 +1,5 @@
-import type {
-  KakaoBookSearchResponse,
-  BookSearchParams,
-  Book,
-  KakaoBook,
-} from "../types/book";
+import type { KakaoBookSearchResponse, KakaoBook } from "../types/api/kakao";
+import type { Book, BookSearchParams } from "../types/api/book";
 
 // 카카오 API 키 (환경변수에서 가져오기)
 const KAKAO_REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY;

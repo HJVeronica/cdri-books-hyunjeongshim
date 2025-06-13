@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import EmptyResult from "../components/common/EmptyResult";
 import Typography from "../components/common/Typography";
 import ResultCount from "../components/common/ResultCount";
@@ -6,14 +6,17 @@ import BookListItem from "../components/common/BookListItem";
 import BookListItemDetail from "../components/common/BookListItemDetail";
 import { useFavorites } from "../hooks/useFavorites";
 import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
+import { BOOK_STATUS, PAGINATION } from "../constants/book";
 import type { FavoriteBook } from "../types/storage";
 
 const FavoritePage = () => {
   const [expandedBookIndex, setExpandedBookIndex] = useState<number | null>(
     null
   );
-  const [visibleCount, setVisibleCount] = useState(10);
-  const { favorites, toggleFavorite } = useFavorites();
+  const [visibleCount, setVisibleCount] = useState<number>(
+    PAGINATION.ITEMS_PER_PAGE
+  );
+  const { favorites, toggleFavorite, error } = useFavorites();
 
   // 상세보기 토글
   const handleToggleExpand = (index: number) => {
@@ -25,17 +28,14 @@ const FavoritePage = () => {
     toggleFavorite(book);
   };
 
-  // 페이지네이션용 계산
-  const visibleBooks = useMemo(() => {
-    return favorites.slice(0, visibleCount);
-  }, [favorites, visibleCount]);
-
+  // 페이지네이션 계산
+  const visibleBooks = favorites.slice(0, visibleCount);
   const hasNextPage = visibleCount < favorites.length;
 
   // 다음 페이지 로드
   const fetchNextPage = () => {
     if (hasNextPage) {
-      setVisibleCount((prev) => prev + 10);
+      setVisibleCount((prev) => prev + PAGINATION.ITEMS_PER_PAGE);
     }
   };
 
@@ -46,6 +46,15 @@ const FavoritePage = () => {
     isFetchingNextPage: false,
     isFetching: false,
   });
+
+  // 에러 상태 처리
+  if (error) {
+    return (
+      <div className="flex items-center justify-center w-full h-full mt-[60px]">
+        <EmptyResult message="찜 목록을 불러오는 중 오류가 발생했습니다." />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col w-full bg-white max-w-[960px] mx-auto">
@@ -85,7 +94,7 @@ const FavoritePage = () => {
                       contents={book.contents}
                       onToggleExpand={() => handleToggleExpand(index)}
                       onFavoriteClick={() => handleFavoriteClick(book)}
-                      status="정상판매"
+                      status={BOOK_STATUS.NORMAL}
                     />
                   ) : (
                     <BookListItem
@@ -97,7 +106,7 @@ const FavoritePage = () => {
                       url={book.url}
                       onToggleExpand={() => handleToggleExpand(index)}
                       onFavoriteClick={() => handleFavoriteClick(book)}
-                      status="정상판매"
+                      status={BOOK_STATUS.NORMAL}
                     />
                   )}
                 </div>
